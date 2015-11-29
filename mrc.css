@@ -1,0 +1,54 @@
+body {
+    background-color: #fff;
+    font: 12px verdana, sans-serif; 
+}
+
+h1 {
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+a {
+    font-weight: bold;
+}
+
+button {
+    background-color: #800;
+    border-color: #c00;
+    color: #f80;
+}
+
+td.mrcPath {
+    /*background-color: #800;*/
+    /*border-color: #c00;*/
+    color: #f80;
+    font-weight: bold;
+    font-style: italic;
+}
+
+div#mrcError {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    width: 300px;
+    background: #800;
+    color: #f80;
+    /*border: 3px solid #c00;*/
+}
+
+div#mrcMenu {
+    background: #ddd;
+    text-align: center;
+}
+
+div#mrcPaths {
+    background: #ddd;
+    text-align: center;
+}
+
+div#mrcControls {
+    background: #ddd;
+    text-align: center;
+}
+
