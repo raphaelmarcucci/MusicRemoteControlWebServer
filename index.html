@@ -2,9 +2,110 @@
 <html>
 <head>
     <title>MusicRemoteControl</title>
+    <link rel="stylesheet" type="text/css" href="mrc.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 </head>
 <body>
+    <div id="mrcMenu">
+       <a href="index.html">browse</a> &#x7C; <a href="playlist.html">playlist</a>
+    </div>
     <h1>MusicRemoteControl</h1>
-    <p> ... to come soon ... </p>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+    <script src="MrcCommunicator.js"></script>
+    <script src="commands/CmdBrowse.js"></script>
+    <script src="commands/CmdPlayFile.js"></script>
+    <script src="commands/CmdPlayDir.js"></script>
+
+    <div id="mrcError"></div>
+    
+    <div id="mrcPaths"></div>
+    <div align="center">
+        <table width="100%" id="mrcBrowser">
+        </table>
+    </div>
+
+    <script type="text/javascript">
+        var mrcCurrentPath='';
+        var mrcBrowserTable = document.getElementById('mrcBrowser');
+        var mrcErrorParagraph = document.getElementById('mrcError');
+        var mrcPathsParagraph = document.getElementById('mrcPaths');
+
+        function mrcPlayFile(pathToPlay) {
+            var myPlayFileCommand = new CmdPlayFile(pathToPlay);
+            var query = JSON.stringify(myPlayFileCommand);
+            var reply = sendToMrcServer(query);
+            var myPlayFileReply = JSON.parse(reply);
+
+            mrcErrorParagraph.innerHTML='';
+            if(myPlayFileReply.error!='') {
+                mrcErrorParagraph.innerHTML='<p>Error!<br/>'+myPlayFileReply.error+'</p>';
+            }
+        }
+
+        function mrcPlayDir(dirToPlay) {
+            var myPlayDirCommand = new CmdPlayDir(dirToPlay);
+            var query = JSON.stringify(myPlayDirCommand);
+            var reply = sendToMrcServer(query);
+            var myPlayDirReply = JSON.parse(reply);
+
+            mrcErrorParagraph.innerHTML='';
+            if(myPlayDirReply.error!='') {
+                mrcErrorParagraph.innerHTML='<p>Error!<br/>'+myPlayDirReply.error+'</p>';
+            }
+        }
+
+        function mrcDisplayPaths() {
+            mrcPathsParagraph.innerHTML = '';
+            var items = mrcCurrentPath.split('/');
+            var concatenated = '';
+            var buttons = '<button title="'+concatenated+'" onclick="mrcBrowse(\''+concatenated+'\');">HOME</button> ';
+            for(var i = 1; i < items.length; i++) {
+                var current = items[i];
+                concatenated += '/'+current;
+                buttons += '<button title="'+concatenated+'"onclick="mrcBrowse(\''+concatenated+'\');">'+current+'</button> ';
+            }
+            buttons += ' &#45; '+'<button onclick="mrcPlayDir(\''+mrcCurrentPath+'\');">&gt;all</button>';
+            mrcPathsParagraph.innerHTML = buttons;
+        }
+
+        function mrcBrowse(pathToBrowse) {
+            mrcCurrentPath = pathToBrowse;
+            mrcDisplayPaths();
+            var myBrowseCommand = new CmdBrowse(mrcCurrentPath);
+            var query = JSON.stringify(myBrowseCommand);
+            var reply = sendToMrcServer(query);
+            var myBrowseReply = JSON.parse(reply);
+
+            mrcBrowserTable.innerHTML='';
+            mrcErrorParagraph.innerHTML='';
+            if(myBrowseReply.error!='') {
+                mrcErrorParagraph.innerHTML='<p>Error!<br/>'+myBrowseReply.error+'</p>';
+            }
+ 
+            var filesLength = myBrowseReply.files.length;
+            var fulltable = '';
+            for (var i = 0; i < filesLength; i++) {
+               var currentfile = myBrowseReply.files[i];
+               var currentbuttons = '';
+               if(currentfile.endsWith('.mp3') || currentfile.endsWith('.ogg')) {
+                   currentbuttons += '<button onclick="mrcPlayFile(\''+mrcCurrentPath+'/'+currentfile+'\');">&gt;</button>'; 
+               }
+               else {
+                   currentbuttons += '<button onclick="mrcPlayDir(\''+mrcCurrentPath+'/'+currentfile+'\');">&gt;</button>';
+                   // currentbuttons += ' ';
+                   // currentbuttons += '<button onclick="mrcBrowse(\''+mrcCurrentPath+'/'+currentfile+'\');">&#43;</button>';
+                   currentfile = '<a onclick="mrcBrowse(\''+mrcCurrentPath+'/'+currentfile+'\');">'+currentfile+'</a>'
+               }
+               var currentrow = '<tr><td align="right">'+currentbuttons+'</td><td>'+currentfile+'</td></tr>';
+               fulltable += currentrow;
+            }
+            mrcBrowserTable.innerHTML = fulltable;
+        }
+
+        $(document).ready(function () {
+            mrcBrowse('');
+        });
+    </script>
+
 </body>
 </html>
