@@ -1,4 +1,4 @@
-function CmdPlayDir(dirToPlay) {
+function CmdPlayDir(dirIdToPlay) {
     this.command = "PlayDir";
-    this.path = dirToPlay;
+    this.fileid = dirIdToPlay;
 }

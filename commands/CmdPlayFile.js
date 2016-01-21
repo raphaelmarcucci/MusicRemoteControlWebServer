@@ -1,4 +1,4 @@
-function CmdPlayFile(pathToPlay) {
+function CmdPlayFile(fileIdToPlay) {
     this.command = "PlayFile";
-    this.path = pathToPlay;
+    this.fileid = fileIdToPlay;
 }

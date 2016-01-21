@@ -1,4 +1,4 @@
-function CmdBrowse(pathToDisplay) {
+function CmdBrowse(fileIdToDisplay) {
     this.command = "Browse";
-    this.path = pathToDisplay;
+    this.fileid = fileIdToDisplay;
 }
