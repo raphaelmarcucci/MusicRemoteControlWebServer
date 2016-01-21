@@ -25,13 +25,13 @@
     </div>
 
     <script type="text/javascript">
-        var mrcCurrentPath='';
+        var mrcCurrentPath;
         var mrcBrowserTable = document.getElementById('mrcBrowser');
         var mrcErrorParagraph = document.getElementById('mrcError');
         var mrcPathsParagraph = document.getElementById('mrcPaths');
 
-        function mrcPlayFile(pathToPlay) {
-            var myPlayFileCommand = new CmdPlayFile(pathToPlay);
+        function mrcPlayFile(pathIdToPlay) {
+            var myPlayFileCommand = new CmdPlayFile(pathIdToPlay);
             var query = JSON.stringify(myPlayFileCommand);
             var reply = sendToMrcServer(query);
             var myPlayFileReply = JSON.parse(reply);
@@ -42,8 +42,8 @@
             }
         }
 
-        function mrcPlayDir(dirToPlay) {
-            var myPlayDirCommand = new CmdPlayDir(dirToPlay);
+        function mrcPlayDir(dirIdToPlay) {
+            var myPlayDirCommand = new CmdPlayDir(dirIdToPlay);
             var query = JSON.stringify(myPlayDirCommand);
             var reply = sendToMrcServer(query);
             var myPlayDirReply = JSON.parse(reply);
@@ -56,25 +56,36 @@
 
         function mrcDisplayPaths() {
             mrcPathsParagraph.innerHTML = '';
-            var items = mrcCurrentPath.split('/');
+            if(mrcCurrentPath==undefined) {
+                mrcPathsParagraph.innerHTML = '... loading path ... please wait...';
+                return;
+            }
+            var items = mrcCurrentPath.path.split('/');
+            var itemIds = mrcCurrentPath.fileid.split('-');
             var concatenated = '';
             var buttons = '<button title="'+concatenated+'" onclick="mrcBrowse(\''+concatenated+'\');">HOME</button> ';
-            for(var i = 1; i < items.length; i++) {
+            for(var i = 0; i < items.length; i++) {
                 var current = items[i];
-                concatenated += '/'+current;
+                var currentId = itemIds[i];
+                if(current=='')
+                    continue;
+                if(concatenated != '')
+                    concatenated += '-';
+                concatenated += currentId;
                 buttons += '<button title="'+concatenated+'"onclick="mrcBrowse(\''+concatenated+'\');">'+current+'</button> ';
             }
-            buttons += ' &#45; '+'<button onclick="mrcPlayDir(\''+mrcCurrentPath+'\');">&gt;all</button>';
+            buttons += ' &#45; '+'<button onclick="mrcPlayDir(\''+mrcCurrentPath.fileid+'\');">&gt;all</button>';
             mrcPathsParagraph.innerHTML = buttons;
         }
 
-        function mrcBrowse(pathToBrowse) {
-            mrcCurrentPath = pathToBrowse;
-            mrcDisplayPaths();
-            var myBrowseCommand = new CmdBrowse(mrcCurrentPath);
+        function mrcBrowse(fileIdToBrowse) {
+            var myBrowseCommand = new CmdBrowse(fileIdToBrowse);
             var query = JSON.stringify(myBrowseCommand);
             var reply = sendToMrcServer(query);
             var myBrowseReply = JSON.parse(reply);
+
+            mrcCurrentPath = myBrowseReply.currentFolder;
+            mrcDisplayPaths();
 
             mrcBrowserTable.innerHTML='';
             mrcErrorParagraph.innerHTML='';
@@ -87,16 +98,20 @@
             for (var i = 0; i < filesLength; i++) {
                var currentfile = myBrowseReply.files[i];
                var currentbuttons = '';
-               if(currentfile.endsWith('.mp3') || currentfile.endsWith('.ogg')) {
-                   currentbuttons += '<button onclick="mrcPlayFile(\''+mrcCurrentPath+'/'+currentfile+'\');">&gt;</button>'; 
+               if(currentfile.ismusicfile) {
+                   currentbuttons += '<button onclick="mrcPlayFile(\''+currentfile.fileid+'\');">&gt;</button>'; 
                }
                else {
-                   currentbuttons += '<button onclick="mrcPlayDir(\''+mrcCurrentPath+'/'+currentfile+'\');">&gt;</button>';
-                   // currentbuttons += ' ';
-                   // currentbuttons += '<button onclick="mrcBrowse(\''+mrcCurrentPath+'/'+currentfile+'\');">&#43;</button>';
-                   currentfile = '<a onclick="mrcBrowse(\''+mrcCurrentPath+'/'+currentfile+'\');">'+currentfile+'</a>'
+                   currentbuttons += '<button onclick="mrcPlayDir(\''+currentfile.fileid+'\');">&gt;</button>';
                }
-               var currentrow = '<tr><td align="right">'+currentbuttons+'</td><td>'+currentfile+'</td></tr>';
+               var currentrow = '<tr><td align="right">'+currentbuttons+'</td><td>';
+               if(currentfile.ismusicfile) {
+                   currentrow += currentfile.displayname;
+               }
+               else {
+                   currentrow += '<a onclick="mrcBrowse(\''+currentfile.fileid+'\');">'+currentfile.displayname+'</a>';
+               }
+               currentrow += '</td></tr>';
                fulltable += currentrow;
             }
             mrcBrowserTable.innerHTML = fulltable;
