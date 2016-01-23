@@ -19,6 +19,15 @@ button {
     color: #f80;
 }
 
+button#playpause {
+    background-color: #800;
+    border-color: #c00;
+    color: #f80;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+
 td.mrcPath {
     /*background-color: #800;*/
     /*border-color: #c00;*/
@@ -48,7 +57,7 @@ div#mrcPaths {
 }
 
 div#mrcControls {
-    background: #ddd;
+    /*background: #ddd;*/
     text-align: center;
 }
 

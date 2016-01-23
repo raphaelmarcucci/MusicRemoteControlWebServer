@@ -7,7 +7,7 @@
 </head>
 <body>
     <div id="mrcMenu">
-       <a href="index.html">browse</a> &#x7C; <a href="playlist.html">playlist</a>
+       <a href="index.html">select</a> &#x7C; <a href="playlist.html">playlist</a>
     </div>
     <h1>MusicRemoteControl</h1>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
@@ -37,9 +37,9 @@
             var r = '<button onclick="mrcVolumeDown();">vol &#45;</button> ';
             r += '<button onclick="mrcPrev();">&lt;&lt;</button> ';
             if(isPaused)
-                r += '<button onclick="mrcUnpause();">&gt;</button>';
+                r += '<button id="playpause" onclick="mrcUnpause();">&#32;&gt;&#32;</button>';
             else
-                r += '<button onclick="mrcPause();">&#124;&#124;</button>';
+                r += '<button id="playpause" onclick="mrcPause();">&#32;&#124;&#124;&#32;</button>';
             r += ' <button onclick="mrcNext();">&gt;&gt;</button> ';
             r += '<button onclick="mrcVolumeUp();">vol &#43;</button>';
             mrcControlsParagraph.innerHTML = r;
@@ -48,7 +48,7 @@
         function mrcDisplayPaths(currentfile) {
             var items = currentfile.split('/');
             var fp = '';
-            for(var i = 1; i < items.length-1; i++) {
+            for(var i = 0; i < items.length-1; i++) {
                 var current = items[i];
                 fp += ' &#x7c; '+current;
             }
