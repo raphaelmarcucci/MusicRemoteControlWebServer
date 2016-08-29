@@ -1,0 +1,130 @@
+Content-type: text/html
+
+<html>
+<head>
+    <title>MusicRemoteControl</title>
+    <link rel="stylesheet" type="text/css" href="../mrc.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body>
+    <div id="mrcMenu">
+       <a href="start.py">select</a> &#x7C; <a href="playlist.py">playlist</a>
+    </div>
+    <h1>MusicRemoteControl</h1>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+    <script src="../MrcCommunicator.js"></script>
+    <script src="../commands/CmdBrowse.js"></script>
+    <script src="../commands/CmdPlayFile.js"></script>
+    <script src="../commands/CmdPlayDir.js"></script>
+
+    <div id="mrcError"></div>
+    
+    <div id="mrcPaths"></div>
+    <div align="center" id="mrcBrowser"></div>
+
+    <script type="text/javascript">
+        var mrcCurrentPath;
+        var mrcBrowserTable = document.getElementById('mrcBrowser');
+        var mrcErrorParagraph = document.getElementById('mrcError');
+        var mrcPathsParagraph = document.getElementById('mrcPaths');
+
+        function mrcPlayFile(pathIdToPlay) {
+            var myPlayFileCommand = new CmdPlayFile(pathIdToPlay);
+            var query = JSON.stringify(myPlayFileCommand);
+            var reply = sendToMrcServer(query);
+            var myPlayFileReply = JSON.parse(reply);
+
+            mrcErrorParagraph.innerHTML='';
+            if(myPlayFileReply.error!='') {
+                mrcErrorParagraph.innerHTML='<p>Error!<br/>'+myPlayFileReply.error+'</p>';
+            }
+        }
+
+        function mrcPlayDir(dirIdToPlay) {
+            var myPlayDirCommand = new CmdPlayDir(dirIdToPlay);
+            var query = JSON.stringify(myPlayDirCommand);
+            var reply = sendToMrcServer(query);
+            var myPlayDirReply = JSON.parse(reply);
+
+            mrcErrorParagraph.innerHTML='';
+            if(myPlayDirReply.error!='') {
+                mrcErrorParagraph.innerHTML='<p>Error!<br/>'+myPlayDirReply.error+'</p>';
+            }
+        }
+
+        function mrcDisplayPaths() {
+            mrcPathsParagraph.innerHTML = '';
+            if(mrcCurrentPath==undefined) {
+                mrcPathsParagraph.innerHTML = '... loading path ... please wait...';
+                return;
+            }
+            var items = mrcCurrentPath.path.split('/');
+            var itemIds = mrcCurrentPath.fileid.split('-');
+            var concatenated = '';
+            var buttons = '<button title="'+concatenated+'" onclick="mrcBrowse(\''+concatenated+'\');">HOME</button> ';
+            for(var i = 0; i < items.length; i++) {
+                var current = items[i];
+                var currentId = itemIds[i];
+                if(current=='')
+                    continue;
+                if(concatenated != '')
+                    concatenated += '-';
+                concatenated += currentId;
+                buttons += '<button title="'+concatenated+'"onclick="mrcBrowse(\''+concatenated+'\');">'+current+'</button> ';
+            }
+            buttons += ' &#45; '+'<button onclick="mrcPlayDir(\''+mrcCurrentPath.fileid+'\');">&gt;all</button>';
+            mrcPathsParagraph.innerHTML = buttons;
+        }
+
+        function mrcBrowse(fileIdToBrowse) {
+            var myBrowseCommand = new CmdBrowse(fileIdToBrowse);
+            var query = JSON.stringify(myBrowseCommand);
+            var reply = sendToMrcServer(query);
+            var myBrowseReply = JSON.parse(reply);
+
+            mrcCurrentPath = myBrowseReply.currentFolder;
+            mrcDisplayPaths();
+
+            mrcBrowserTable.innerHTML='';
+            mrcErrorParagraph.innerHTML='';
+            if(myBrowseReply.error!='') {
+                mrcErrorParagraph.innerHTML='<p>Error!<br/>'+myBrowseReply.error+'</p>';
+            }
+ 
+            var filesLength = myBrowseReply.files.length;
+            if(filesLength<=0)
+                return;
+
+            mrcBrowserTable.innerHTML='<form id="mrcBrowseForm" method="post"><input type="hidden" id="mrcBrowseFormField" name="mrcFileId" value="'+fileIdToBrowse+'" /></form>';
+
+            var fulltable = '<table width="100%">';
+            for (var i = 0; i < filesLength; i++) {
+               var currentfile = myBrowseReply.files[i];
+               var currentbuttons = '';
+               if(currentfile.ismusicfile) {
+                   currentbuttons += '<button onclick="mrcPlayFile(\''+currentfile.fileid+'\');">&gt;</button>'; 
+               }
+               else {
+                   currentbuttons += '<button onclick="mrcPlayDir(\''+currentfile.fileid+'\');">&gt;</button>';
+               }
+               var currentrow = '<tr><td align="right">'+currentbuttons+'</td><td>';
+               if(currentfile.ismusicfile) {
+                   currentrow += currentfile.displayname;
+               }
+               else {
+                   var clickfunc='document.getElementById(\'mrcBrowseFormField\').value=\''+currentfile.fileid+'\';document.getElementById(\'mrcBrowseForm\').submit();';
+                   currentrow += '<a href="#" onclick="'+clickfunc+'">'+currentfile.displayname+'</a>';
+               }
+               currentrow += '</td></tr>';
+               fulltable += currentrow;
+            }
+            fulltable += '</table>';
+            mrcBrowserTable.innerHTML += fulltable;
+        }
+    </script>
+
+    <python function="mrcDisplayDirFromPost" param="mrcFileId" />
+
+</body>
+</html>
+

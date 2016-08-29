@@ -1,0 +1,158 @@
+Content-type: text/html
+
+<html>
+<head>
+    <title>MusicRemoteControl</title>
+    <link rel="stylesheet" type="text/css" href="../mrc.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body>
+    <div id="mrcMenu">
+       <a href="start.py">select</a> &#x7C; <a href="playlist.py">playlist</a>
+    </div>
+    <h1>MusicRemoteControl</h1>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+    <script src="../MrcCommunicator.js"></script>
+    <script src="../MrcCommunicator.js"></script>
+    <script src="../commands/CmdPlayList.js"></script>
+    <script src="../commands/CmdPrev.js"></script>
+    <script src="../commands/CmdNext.js"></script>
+    <script src="../commands/CmdPause.js"></script>
+    <script src="../commands/CmdUnpause.js"></script>
+    <script src="../commands/CmdVolumeUp.js"></script>
+    <script src="../commands/CmdVolumeDown.js"></script>
+
+    <div id="mrcError"></div>
+    
+    <div id="mrcControls"></div>
+    <div align="center">
+        <table width="100%" id="mrcPlaylist">
+        </table>
+    </div>
+
+    <form id="mrcBrowseForm" action="start.py" method="post">
+        <input type="hidden" id="mrcBrowseFormField" name="mrcFileId" value="" /> 
+    </form>
+
+    <script type="text/javascript">
+        var mrcControlsParagraph = document.getElementById("mrcControls");
+        var mrcPlaylistTable = document.getElementById('mrcPlaylist');
+        var mrcErrorParagraph = document.getElementById('mrcError');
+        
+        function mrcDisplayControls(isPaused) {
+            var r = '<button onclick="mrcVolumeDown();">vol &#45;</button> ';
+            r += '<button onclick="mrcPrev();">&lt;&lt;</button> ';
+            if(isPaused)
+                r += '<button id="playpause" onclick="mrcUnpause();">&#32;&gt;&#32;</button>';
+            else
+                r += '<button id="playpause" onclick="mrcPause();">&#32;&#124;&#124;&#32;</button>';
+            r += ' <button onclick="mrcNext();">&gt;&gt;</button> ';
+            r += '<button onclick="mrcVolumeUp();">vol &#43;</button>';
+            mrcControlsParagraph.innerHTML = r;
+        }
+
+        function mrcDisplayPaths(currentfile) {
+            var items = currentfile.split('/');
+            var fp = '';
+            for(var i = 0; i < items.length-1; i++) {
+                var current = items[i];
+                fp += ' &#x7c; '+current;
+            }
+            return { filepath: fp, filename: items[items.length-1] };
+        }
+
+        function mrcDisplayPathsButtons(currentfile) {
+            var nameitems = currentfile.path.split('/');
+            var iditems = currentfile.fileid.split('-');
+            var concatenatedid='';
+            var buttons='';
+            for(var i = 0; i < iditems.length-1; i++) {
+                if(concatenatedid!='')
+                    concatenatedid+='-';
+                concatenatedid+=iditems[i];
+                var clickfunc='document.getElementById(\'mrcBrowseFormField\').value=\''+concatenatedid+'\';document.getElementById(\'mrcBrowseForm\').submit();';
+                buttons+='<button onclick="'+clickfunc+'">'+nameitems[i]+'</button> ';
+            }
+            return buttons;
+        }
+
+        function mrcPlayList() {
+            var myPlayListCommand = new CmdPlayList();
+            var query = JSON.stringify(myPlayListCommand);
+            var reply = sendToMrcServer(query);
+            var myPlayListReply = JSON.parse(reply);
+
+            mrcPlaylistTable.innerHTML='';
+            mrcErrorParagraph.innerHTML='';
+
+            if(myPlayListReply.error!='') {
+                document.getElementById('mrcError').innerHTML='Error!<br/>'+myPlayListReply.error;
+            }
+            mrcDisplayControls(myPlayListReply.isPaused);
+            var filesLength = myPlayListReply.files.length;
+            var referencepath = '';
+            var fulltable = '';
+            for (var i = 0; i < filesLength; i++) {
+               var currentfile = myPlayListReply.files[i];
+               var pathsresult = mrcDisplayPaths(currentfile.path);
+               var currentfilepath = pathsresult.filepath;
+               var currentfilename = pathsresult.filename;
+               
+               if(referencepath != currentfilepath) {
+                   referencepath = currentfilepath;
+                   fulltable += '<tr><td class="mrcPath">'+mrcDisplayPathsButtons(currentfile)+'</td></tr>';
+               }
+               var currentline = '';
+               if(i==myPlayListReply.currentFileIndex)
+                   currentline = '<b>'+currentfilename+'</b>';
+               else
+                   currentline = currentfilename;
+               fulltable += '<tr><td>'+currentline+'</td></tr>';
+            }
+            mrcPlaylistTable.innerHTML = fulltable;
+        }
+
+        function mrcPrev() {
+            var myPrevCommand = new CmdPrev();
+            var query = JSON.stringify(myPrevCommand);
+            sendToMrcServer(query);
+            mrcPlayList();
+        }
+        function mrcNext() {
+            var myNextCommand = new CmdNext();
+            var query = JSON.stringify(myNextCommand);
+            sendToMrcServer(query);
+            mrcPlayList();
+        }
+        function mrcPause() {
+            var myPauseCommand = new CmdPause();
+            var query = JSON.stringify(myPauseCommand);
+            sendToMrcServer(query);
+            mrcPlayList();
+        }
+        function mrcUnpause() {
+            var myUnpauseCommand = new CmdUnpause();
+            var query = JSON.stringify(myUnpauseCommand);
+            sendToMrcServer(query);
+            mrcPlayList();
+        }
+        function mrcVolumeUp() {
+            var myVolumeUpCommand = new CmdVolumeUp();
+            var query = JSON.stringify(myVolumeUpCommand);
+            sendToMrcServer(query);
+        }
+        function mrcVolumeDown() {
+            var myVolumeDownCommand = new CmdVolumeDown();
+            var query = JSON.stringify(myVolumeDownCommand);
+            sendToMrcServer(query);
+        }
+
+        $(document).ready(function () {
+            mrcPlayList();
+        });
+
+    </script>
+
+</body>
+</html>
+
