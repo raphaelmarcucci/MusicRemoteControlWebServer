@@ -1,37 +1,45 @@
 body {
-    background-color: #fff;
+    background-color: #444;
     font: 12px verdana, sans-serif; 
+    color: #ddd;
 }
 
 h1 {
+    color: #5cf;
     text-align: center;
     font-size: 18px;
     font-weight: bold;
 }
 
 a {
+    color: #5cf; 
     font-weight: bold;
+    text-decoration: none;
+}
+
+table {
+    background-color: #222;
+    font-size: 12px;
 }
 
 button {
-    background-color: #800;
-    border-color: #c00;
-    color: #f80;
+    background-color: #222;
+    border-color: #000;
+    color: #5cf;
 }
 
 button#playpause {
-    background-color: #800;
-    border-color: #c00;
-    color: #f80;
+    background-color: #222;
+    border-color: #000;
+    color: #5cf;
     font-size: 24px;
     font-weight: bold;
 }
 
-
 td.mrcPath {
     /*background-color: #800;*/
     /*border-color: #c00;*/
-    color: #f80;
+    color: #ce3;
     font-weight: bold;
     font-style: italic;
 }
@@ -41,18 +49,18 @@ div#mrcError {
     bottom: 0;
     right: 0;
     width: 300px;
-    background: #800;
-    color: #f80;
-    /*border: 3px solid #c00;*/
+    background: #000;
+    color: #f00;
+    /* border: 5px solid #000; */
 }
 
 div#mrcMenu {
-    background: #ddd;
+    background: #222;
     text-align: center;
 }
 
 div#mrcPaths {
-    background: #ddd;
+    /* background: #555; */
     text-align: center;
 }
 
