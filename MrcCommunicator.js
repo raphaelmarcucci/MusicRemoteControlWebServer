@@ -34,7 +34,7 @@ function sendToMrcServer(messagequery) {
 				
     // leave synchronous communication for the moment, even if not recommended
     // TODO: find a better usage later
-    xhr.open('POST', 'http://192.168.1.36:61666/', false);
+    xhr.open('POST', 'http://192.168.0.12:61666/', false);
     xhr.send(messagequery);
  
     //waitForValue();

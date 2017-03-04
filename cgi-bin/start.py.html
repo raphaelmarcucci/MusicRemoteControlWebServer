@@ -13,11 +13,14 @@ Content-type: text/html
     <h1>MusicRemoteControl</h1>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
     <script src="../MrcCommunicator.js"></script>
+    <script src="../MrcControls.js"></script>
     <script src="../commands/CmdBrowse.js"></script>
     <script src="../commands/CmdPlayFile.js"></script>
     <script src="../commands/CmdPlayDir.js"></script>
+    <script src="../commands/CmdPlayList.js"></script>
 
     <div id="mrcError"></div>
+    <div id="mrcControls"></div>
     
     <div id="mrcPaths"></div>
     <div align="center" id="mrcBrowser"></div>
@@ -27,6 +30,13 @@ Content-type: text/html
         var mrcBrowserTable = document.getElementById('mrcBrowser');
         var mrcErrorParagraph = document.getElementById('mrcError');
         var mrcPathsParagraph = document.getElementById('mrcPaths');
+
+        var mrcControlsParagraph = document.getElementById('mrcControls');
+        var myPlayListCommand = new CmdPlayList();
+        var query = JSON.stringify(myPlayListCommand);
+        var reply = sendToMrcServer(query);
+        var myPlayListReply = JSON.parse(reply);
+        mrcDisplayControls(myPlayListReply.isPaused, mrcControlsParagraph);
 
         function mrcPlayFile(pathIdToPlay) {
             var myPlayFileCommand = new CmdPlayFile(pathIdToPlay);

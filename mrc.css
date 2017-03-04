@@ -60,12 +60,15 @@ div#mrcMenu {
 }
 
 div#mrcPaths {
-    /* background: #555; */
+    background: #555;
     text-align: center;
+    margin: 5px;
 }
 
 div#mrcControls {
     /*background: #ddd;*/
     text-align: center;
+    /*border: 5px solid #f00;*/
+    margin: 5px;
 }
 
