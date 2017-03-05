@@ -18,6 +18,12 @@ Content-type: text/html
     <script src="../commands/CmdPlayFile.js"></script>
     <script src="../commands/CmdPlayDir.js"></script>
     <script src="../commands/CmdPlayList.js"></script>
+    <script src="../commands/CmdPrev.js"></script>
+    <script src="../commands/CmdNext.js"></script>
+    <script src="../commands/CmdPause.js"></script>
+    <script src="../commands/CmdUnpause.js"></script>
+    <script src="../commands/CmdVolumeUp.js"></script>
+    <script src="../commands/CmdVolumeDown.js"></script>
 
     <div id="mrcError"></div>
     <div id="mrcControls"></div>
@@ -131,6 +137,38 @@ Content-type: text/html
             fulltable += '</table>';
             mrcBrowserTable.innerHTML += fulltable;
         }
+
+        function mrcPrev() {
+            var myPrevCommand = new CmdPrev();
+            var query = JSON.stringify(myPrevCommand);
+            sendToMrcServer(query);
+        }
+        function mrcNext() {
+            var myNextCommand = new CmdNext();
+            var query = JSON.stringify(myNextCommand);
+            sendToMrcServer(query);
+        }
+        function mrcPause() {
+            var myPauseCommand = new CmdPause();
+            var query = JSON.stringify(myPauseCommand);
+            sendToMrcServer(query);
+            mrcDisplayControls(true, mrcControlsParagraph);
+        }
+        function mrcUnpause() {
+            var myUnpauseCommand = new CmdUnpause();
+            var query = JSON.stringify(myUnpauseCommand);
+            sendToMrcServer(query);
+            mrcDisplayControls(false, mrcControlsParagraph);
+        }
+        function mrcVolumeUp() {
+            var myVolumeUpCommand = new CmdVolumeUp();
+            var query = JSON.stringify(myVolumeUpCommand);
+        }
+        function mrcVolumeDown() {
+            var myVolumeDownCommand = new CmdVolumeDown();
+            var query = JSON.stringify(myVolumeDownCommand);
+        }
+
     </script>
 
     <python function="mrcDisplayDirFromPost" param="mrcFileId" />
