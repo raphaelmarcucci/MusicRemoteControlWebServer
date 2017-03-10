@@ -92,7 +92,7 @@ Content-type: text/html
                }
                var currentline = '';
                if(i==myPlayListReply.currentFileIndex)
-                   currentline = '<b>'+currentfilename+'</b>';
+                   currentline = '<span class="mrcCurrentSong">'+currentfilename+'</span>';
                else
                    currentline = currentfilename;
                fulltable += '<tr><td>'+currentline+'</td></tr>';

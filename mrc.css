@@ -72,3 +72,9 @@ div#mrcControls {
     margin: 5px;
 }
 
+span.mrcCurrentSong {
+    color: #fa3;
+    font-weight: bold;
+    font-style: italic;
+}
+
