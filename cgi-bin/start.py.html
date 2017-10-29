@@ -40,14 +40,14 @@ Content-type: text/html
         var mrcControlsParagraph = document.getElementById('mrcControls');
         var myPlayListCommand = new CmdPlayList();
         var query = JSON.stringify(myPlayListCommand);
-        var reply = sendToMrcServer(query);
+        var reply = sendToMrcServer(query, document.getElementById('mrcError'));
         var myPlayListReply = JSON.parse(reply);
         mrcDisplayControls(myPlayListReply.isPaused, mrcControlsParagraph);
 
         function mrcPlayFile(pathIdToPlay) {
             var myPlayFileCommand = new CmdPlayFile(pathIdToPlay);
             var query = JSON.stringify(myPlayFileCommand);
-            var reply = sendToMrcServer(query);
+            var reply = sendToMrcServer(query, document.getElementById('mrcError'));
             var myPlayFileReply = JSON.parse(reply);
 
             mrcErrorParagraph.innerHTML='';
@@ -59,7 +59,7 @@ Content-type: text/html
         function mrcPlayDir(dirIdToPlay) {
             var myPlayDirCommand = new CmdPlayDir(dirIdToPlay);
             var query = JSON.stringify(myPlayDirCommand);
-            var reply = sendToMrcServer(query);
+            var reply = sendToMrcServer(query, document.getElementById('mrcError'));
             var myPlayDirReply = JSON.parse(reply);
 
             mrcErrorParagraph.innerHTML='';
@@ -95,7 +95,7 @@ Content-type: text/html
         function mrcBrowse(fileIdToBrowse) {
             var myBrowseCommand = new CmdBrowse(fileIdToBrowse);
             var query = JSON.stringify(myBrowseCommand);
-            var reply = sendToMrcServer(query);
+            var reply = sendToMrcServer(query, document.getElementById('mrcError'));
             var myBrowseReply = JSON.parse(reply);
 
             mrcCurrentPath = myBrowseReply.currentFolder;
@@ -141,32 +141,34 @@ Content-type: text/html
         function mrcPrev() {
             var myPrevCommand = new CmdPrev();
             var query = JSON.stringify(myPrevCommand);
-            sendToMrcServer(query);
+            sendToMrcServer(query, document.getElementById('mrcError'));
         }
         function mrcNext() {
             var myNextCommand = new CmdNext();
             var query = JSON.stringify(myNextCommand);
-            sendToMrcServer(query);
+            sendToMrcServer(query, document.getElementById('mrcError'));
         }
         function mrcPause() {
             var myPauseCommand = new CmdPause();
             var query = JSON.stringify(myPauseCommand);
-            sendToMrcServer(query);
+            sendToMrcServer(query, document.getElementById('mrcError'));
             mrcDisplayControls(true, mrcControlsParagraph);
         }
         function mrcUnpause() {
             var myUnpauseCommand = new CmdUnpause();
             var query = JSON.stringify(myUnpauseCommand);
-            sendToMrcServer(query);
+            sendToMrcServer(query, document.getElementById('mrcError'));
             mrcDisplayControls(false, mrcControlsParagraph);
         }
         function mrcVolumeUp() {
             var myVolumeUpCommand = new CmdVolumeUp();
             var query = JSON.stringify(myVolumeUpCommand);
+            sendToMrcServer(query, document.getElementById('mrcError'));
         }
         function mrcVolumeDown() {
             var myVolumeDownCommand = new CmdVolumeDown();
             var query = JSON.stringify(myVolumeDownCommand);
+            sendToMrcServer(query, document.getElementById('mrcError'));
         }
 
     </script>

@@ -16,7 +16,7 @@ var messagereply='';
 //     }
 // }
 
-function sendToMrcServer(messagequery) {
+function sendToMrcServer(messagequery, paragraph) {
 
     var xhr = new XMLHttpRequest();
     messagereply = '';
@@ -24,11 +24,13 @@ function sendToMrcServer(messagequery) {
     messagequery += '\n';
 
     xhr.onreadystatechange=function() {
-        if(xhr.readyState == 4) {
-            if (xhr.status == 200 || xhr.status == 0) {
-                messagereply = xhr.responseText;
-                messagereply = htmlDecode(messagereply)
-            }
+        if(xhr.readyState == 4 && (xhr.status == 200 || xhr.status == 0)) {
+            messagereply = xhr.responseText;
+            messagereply = htmlDecode(messagereply);
+            paragraph.innerHTML='';
+        }
+        else if(xhr.readyState < 4) {
+            paragraph.innerHTML='<p>loading...</p>';
         }
     }
 				

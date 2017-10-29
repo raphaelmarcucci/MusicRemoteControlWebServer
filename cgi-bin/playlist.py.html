@@ -67,7 +67,7 @@ Content-type: text/html
         function mrcPlayList() {
             var myPlayListCommand = new CmdPlayList();
             var query = JSON.stringify(myPlayListCommand);
-            var reply = sendToMrcServer(query);
+            var reply = sendToMrcServer(query, document.getElementById('mrcError'));
             var myPlayListReply = JSON.parse(reply);
 
             mrcPlaylistTable.innerHTML='';
@@ -80,22 +80,28 @@ Content-type: text/html
             var filesLength = myPlayListReply.files.length;
             var referencepath = '';
             var fulltable = '';
-            for (var i = 0; i < filesLength; i++) {
-               var currentfile = myPlayListReply.files[i];
-               var pathsresult = mrcDisplayPaths(currentfile.path);
-               var currentfilepath = pathsresult.filepath;
-               var currentfilename = pathsresult.filename;
+
+            if(filesLength>0) {
+                for (var i = 0; i < filesLength; i++) {
+                   var currentfile = myPlayListReply.files[i];
+                   var pathsresult = mrcDisplayPaths(currentfile.path);
+                   var currentfilepath = pathsresult.filepath;
+                   var currentfilename = pathsresult.filename;
                
-               if(referencepath != currentfilepath) {
-                   referencepath = currentfilepath;
-                   fulltable += '<tr><td class="mrcPath">'+mrcDisplayPathsButtons(currentfile)+'</td></tr>';
-               }
-               var currentline = '';
-               if(i==myPlayListReply.currentFileIndex)
-                   currentline = '<span class="mrcCurrentSong">'+currentfilename+'</span>';
-               else
-                   currentline = currentfilename;
-               fulltable += '<tr><td>'+currentline+'</td></tr>';
+                   if(referencepath != currentfilepath) {
+                       referencepath = currentfilepath;
+                       fulltable += '<tr><td class="mrcPath">'+mrcDisplayPathsButtons(currentfile)+'</td></tr>';
+                   }
+                   var currentline = '';
+                   if(i==myPlayListReply.currentFileIndex)
+                       currentline = '<span class="mrcCurrentSong">'+currentfilename+'</span>';
+                   else
+                       currentline = currentfilename;
+                   fulltable += '<tr><td>'+currentline+'</td></tr>';
+                }
+            }
+            else {
+                fulltable = '<tr><td align="center">no songs in current playlist: go <a href="start.py">select</a> some :)</td></tr>';
             }
             mrcPlaylistTable.innerHTML = fulltable;
         }
@@ -103,36 +109,36 @@ Content-type: text/html
         function mrcPrev() {
             var myPrevCommand = new CmdPrev();
             var query = JSON.stringify(myPrevCommand);
-            sendToMrcServer(query);
+            sendToMrcServer(query, document.getElementById('mrcError'));
             mrcPlayList();
         }
         function mrcNext() {
             var myNextCommand = new CmdNext();
             var query = JSON.stringify(myNextCommand);
-            sendToMrcServer(query);
+            sendToMrcServer(query, document.getElementById('mrcError'));
             mrcPlayList();
         }
         function mrcPause() {
             var myPauseCommand = new CmdPause();
             var query = JSON.stringify(myPauseCommand);
-            sendToMrcServer(query);
+            sendToMrcServer(query, document.getElementById('mrcError'));
             mrcPlayList();
         }
         function mrcUnpause() {
             var myUnpauseCommand = new CmdUnpause();
             var query = JSON.stringify(myUnpauseCommand);
-            sendToMrcServer(query);
+            sendToMrcServer(query, document.getElementById('mrcError'));
             mrcPlayList();
         }
         function mrcVolumeUp() {
             var myVolumeUpCommand = new CmdVolumeUp();
             var query = JSON.stringify(myVolumeUpCommand);
-            sendToMrcServer(query);
+            sendToMrcServer(query, document.getElementById('mrcError'));
         }
         function mrcVolumeDown() {
             var myVolumeDownCommand = new CmdVolumeDown();
             var query = JSON.stringify(myVolumeDownCommand);
-            sendToMrcServer(query);
+            sendToMrcServer(query, document.getElementById('mrcError'));
         }
 
         $(document).ready(function () {
